@@ -1,0 +1,144 @@
+
+import { useState } from 'react';
+import { ExternalLink, Github, Filter } from 'lucide-react';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+const Projects = () => {
+  const [filter, setFilter] = useState('all');
+
+  const projects = [
+    {
+      id: 1,
+      title: 'E-Commerce Platform',
+      description: 'A full-stack e-commerce platform with React, Node.js, and Stripe integration. Features include user authentication, product management, and real-time order tracking.',
+      image: '/placeholder.svg',
+      technologies: ['React', 'Node.js', 'PostgreSQL', 'Stripe', 'AWS'],
+      category: 'fullstack',
+      github: 'https://github.com',
+      live: 'https://example.com'
+    },
+    {
+      id: 2,
+      title: 'Task Management App',
+      description: 'A collaborative task management application with real-time updates, drag-and-drop functionality, and team collaboration features.',
+      image: '/placeholder.svg',
+      technologies: ['Vue.js', 'Express', 'Socket.io', 'MongoDB'],
+      category: 'frontend',
+      github: 'https://github.com',
+      live: 'https://example.com'
+    },
+    {
+      id: 3,
+      title: 'Weather Analytics API',
+      description: 'RESTful API service that aggregates weather data from multiple sources and provides analytics insights with caching and rate limiting.',
+      image: '/placeholder.svg',
+      technologies: ['Python', 'FastAPI', 'Redis', 'Docker'],
+      category: 'backend',
+      github: 'https://github.com',
+      live: null
+    },
+    {
+      id: 4,
+      title: 'Portfolio Website',
+      description: 'A responsive portfolio website built with Next.js and Tailwind CSS, featuring dark mode, animations, and optimized performance.',
+      image: '/placeholder.svg',
+      technologies: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
+      category: 'frontend',
+      github: 'https://github.com',
+      live: 'https://example.com'
+    }
+  ];
+
+  const categories = [
+    { id: 'all', name: 'All Projects' },
+    { id: 'fullstack', name: 'Full Stack' },
+    { id: 'frontend', name: 'Frontend' },
+    { id: 'backend', name: 'Backend' }
+  ];
+
+  const filteredProjects = filter === 'all' 
+    ? projects 
+    : projects.filter(project => project.category === filter);
+
+  return (
+    <section id="projects" className="py-20 bg-muted/30">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+              Featured Projects
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              A showcase of my recent work and contributions
+            </p>
+          </div>
+
+          {/* Filter buttons */}
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            {categories.map((category) => (
+              <Button
+                key={category.id}
+                variant={filter === category.id ? 'default' : 'outline'}
+                onClick={() => setFilter(category.id)}
+                className="flex items-center gap-2"
+              >
+                <Filter size={16} />
+                {category.name}
+              </Button>
+            ))}
+          </div>
+
+          {/* Projects grid */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {filteredProjects.map((project) => (
+              <Card key={project.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <CardHeader className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-3">{project.title}</h3>
+                  <p className="text-muted-foreground mb-4 leading-relaxed">
+                    {project.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="p-6 pt-0 flex gap-4">
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      <Github size={16} />
+                      Code
+                    </a>
+                  </Button>
+                  {project.live && (
+                    <Button size="sm" asChild>
+                      <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        <ExternalLink size={16} />
+                        Live Demo
+                      </a>
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Projects;
