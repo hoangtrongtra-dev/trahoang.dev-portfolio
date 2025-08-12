@@ -1,36 +1,34 @@
 
 import { useState } from 'react';
-import { Mail, MapPin, Phone, Send } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { contactFormSchema, type ContactFormData } from '@/lib/validations/contact';
 import { toast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty, isValid },
+    reset,
+    watch,
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    mode: 'onChange',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    toast({
-      title: "Message sent!",
-      description: "Thank you for your message. I'll get back to you soon.",
-    });
-    setFormData({ name: '', email: '', subject: '', message: '' });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
+  const watchedFields = watch();
 
   const contactInfo = [
     {
@@ -52,6 +50,56 @@ const Contact = () => {
       href: null
     }
   ];
+
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Here you would typically send the data to your backend
+      console.log('Form data:', data);
+      
+      setSubmitStatus('success');
+      toast({
+        title: "Message sent successfully!",
+        description: "Thank you for your message. I'll get back to you within 24 hours.",
+      });
+      
+      reset();
+    } catch (error) {
+      setSubmitStatus('error');
+      toast({
+        title: "Failed to send message",
+        description: "Please try again later or contact me directly via email.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getFieldStatus = (fieldName: keyof ContactFormData) => {
+    const hasError = errors[fieldName];
+    const hasValue = watchedFields[fieldName];
+    
+    if (hasError) return 'error';
+    if (hasValue) return 'success';
+    return 'idle';
+  };
+
+  const getStatusIcon = (status: 'idle' | 'success' | 'error') => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-500" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <section id="contact" className="py-20">
@@ -96,58 +144,183 @@ const Contact = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Additional Info */}
+              <div className="bg-muted/50 p-6 rounded-lg">
+                <h4 className="font-semibold mb-3">What I can help you with:</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• Full-stack web development</li>
+                  <li>• UI/UX design and implementation</li>
+                  <li>• Performance optimization</li>
+                  <li>• Technical consulting</li>
+                  <li>• Code review and mentoring</li>
+                </ul>
+              </div>
             </div>
 
             {/* Contact Form */}
-            <Card>
+            <Card className="relative">
               <CardHeader>
-                <CardTitle>Send me a message</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Send className="w-5 h-5" />
+                  Send me a message
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  {/* Name Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-medium">
+                      Name *
+                    </Label>
+                    <div className="relative">
                       <Input
-                        name="name"
-                        placeholder="Your Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
+                        id="name"
+                        {...register('name')}
+                        placeholder="Your full name"
+                        className={cn(
+                          "pr-10",
+                          getFieldStatus('name') === 'error' && "border-red-500 focus:border-red-500",
+                          getFieldStatus('name') === 'success' && "border-green-500 focus:border-green-500"
+                        )}
                       />
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        {getStatusIcon(getFieldStatus('name'))}
+                      </div>
                     </div>
-                    <div>
+                    {errors.name && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.name.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Email Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium">
+                      Email *
+                    </Label>
+                    <div className="relative">
                       <Input
-                        name="email"
+                        id="email"
                         type="email"
-                        placeholder="Your Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
+                        {...register('email')}
+                        placeholder="your.email@example.com"
+                        className={cn(
+                          "pr-10",
+                          getFieldStatus('email') === 'error' && "border-red-500 focus:border-red-500",
+                          getFieldStatus('email') === 'success' && "border-green-500 focus:border-green-500"
+                        )}
                       />
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        {getStatusIcon(getFieldStatus('email'))}
+                      </div>
                     </div>
+                    {errors.email && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.email.message}
+                      </p>
+                    )}
                   </div>
-                  <div>
-                    <Input
-                      name="subject"
-                      placeholder="Subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                    />
+
+                  {/* Subject Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="subject" className="text-sm font-medium">
+                      Subject *
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="subject"
+                        {...register('subject')}
+                        placeholder="What's this about?"
+                        className={cn(
+                          "pr-10",
+                          getFieldStatus('subject') === 'error' && "border-red-500 focus:border-red-500",
+                          getFieldStatus('subject') === 'success' && "border-green-500 focus:border-green-500"
+                        )}
+                      />
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        {getStatusIcon(getFieldStatus('subject'))}
+                      </div>
+                    </div>
+                    {errors.subject && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.subject.message}
+                      </p>
+                    )}
                   </div>
-                  <div>
-                    <Textarea
-                      name="message"
-                      placeholder="Your Message"
-                      rows={5}
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                    />
+
+                  {/* Message Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="text-sm font-medium">
+                      Message *
+                    </Label>
+                    <div className="relative">
+                      <Textarea
+                        id="message"
+                        {...register('message')}
+                        placeholder="Tell me about your project..."
+                        rows={5}
+                        className={cn(
+                          "pr-10 resize-none",
+                          getFieldStatus('message') === 'error' && "border-red-500 focus:border-red-500",
+                          getFieldStatus('message') === 'success' && "border-green-500 focus:border-green-500"
+                        )}
+                      />
+                      <div className="absolute right-3 top-3">
+                        {getStatusIcon(getFieldStatus('message'))}
+                      </div>
+                    </div>
+                    {errors.message && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.message.message}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {watchedFields.message?.length || 0}/1000 characters
+                    </p>
                   </div>
-                  <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
-                    <Send size={20} className="mr-2" />
-                    Send Message
+
+                  {/* Submit Status */}
+                  {submitStatus === 'success' && (
+                    <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <AlertDescription className="text-green-700 dark:text-green-300">
+                        Message sent successfully! I'll get back to you soon.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {submitStatus === 'error' && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        Failed to send message. Please try again or contact me directly.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* Submit Button */}
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting || !isDirty || !isValid}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={20} className="mr-2" />
+                        Send Message
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>

@@ -5,9 +5,9 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   const socialLinks = [
-    { icon: Github, href: 'https://github.com', label: 'GitHub' },
+    { icon: Github, href: 'https://github.com/hoangtrongtra-dev', label: 'GitHub' },
     { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: Mail, href: 'mailto:contact@trahoang.dev', label: 'Email' }
+    { icon: Mail, href: 'mailto:contact@trahoangdev', label: 'Email' }
   ];
 
   return (
@@ -17,7 +17,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
               <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent mb-2">
-                trahoang.dev
+                trahoangdev
               </h3>
               <p className="text-muted-foreground">
                 Building digital experiences with passion and precision
@@ -42,7 +42,7 @@ const Footer = () => {
 
           <div className="border-t border-border mt-8 pt-8 text-center">
             <p className="text-muted-foreground flex items-center justify-center gap-1">
-              © {currentYear} trahoang.dev. Made with <Heart size={16} className="text-red-500" /> and lots of coffee.
+              © {currentYear} trahoangdev. Made with <Heart size={16} className="text-red-500" /> and lots of coffee.
             </p>
           </div>
         </div>

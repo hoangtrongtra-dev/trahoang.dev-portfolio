@@ -4,16 +4,17 @@ import { ExternalLink, Github, Filter } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const Projects = () => {
   const [filter, setFilter] = useState('all');
 
   const projects = [
-    {
+    /*{
       id: 1,
       title: 'E-Commerce Platform',
       description: 'A full-stack e-commerce platform with React, Node.js, and Stripe integration. Features include user authentication, product management, and real-time order tracking.',
-      image: 'src/assets/images/project-1.jpg',
+      image: '/src/assets/images/project-1.jpg',
       technologies: ['React', 'Node.js', 'PostgreSQL', 'Stripe', 'AWS'],
       category: 'fullstack',
       github: 'https://github.com',
@@ -23,7 +24,7 @@ const Projects = () => {
       id: 2,
       title: 'Task Management App',
       description: 'A collaborative task management application with real-time updates, drag-and-drop functionality, and team collaboration features.',
-      image: 'src/assets/images/project-2.jpg',
+      image: '/src/assets/images/project-2.jpg',
       technologies: ['Vue.js', 'Express', 'Socket.io', 'MongoDB'],
       category: 'frontend',
       github: 'https://github.com',
@@ -33,20 +34,20 @@ const Projects = () => {
       id: 3,
       title: 'Weather Analytics API',
       description: 'RESTful API service that aggregates weather data from multiple sources and provides analytics insights with caching and rate limiting.',
-      image: 'src/assets/images/project-3.jpg',
+      image: '/src/assets/images/project-3.jpg',
       technologies: ['Python', 'FastAPI', 'Redis', 'Docker'],
       category: 'backend',
       github: 'https://github.com',
       live: null
-    },
+    },*/
     {
       id: 4,
       title: 'Portfolio Website',
-      description: 'A responsive portfolio website built with Next.js and Tailwind CSS, featuring dark mode, animations, and optimized performance.',
-      image: 'src/assets/images/project-4.jpg',
-      technologies: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
+      description: 'A responsive portfolio website built with React.js and Tailwind CSS, featuring dark mode, animations, and optimized performance.',
+      image: '/src/assets/images/project-4.jpg',
+      technologies: ['React.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
       category: 'frontend',
-      github: 'https://github.com',
+      github: 'https://github.com/hoangtrongtra-dev/trahoang.dev-portfolio',
       live: 'https://example.com'
     }
   ];
@@ -93,18 +94,29 @@ const Projects = () => {
           {/* Projects grid */}
           <div className="grid md:grid-cols-2 gap-8">
             {filteredProjects.map((project) => (
-              <Card key={project.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <Card key={project.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <CardHeader className="p-0">
-                  <div className="aspect-video bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-                    <img
+                  <div className="aspect-video bg-gradient-to-br from-blue-500/20 to-purple-500/20 relative overflow-hidden">
+                    <OptimizedImage
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full"
+                      width={600}
+                      height={400}
+                      fallback="/placeholder.svg"
                     />
+                    {/* Overlay on hover */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <div className="text-white text-center">
+                        <p className="text-sm font-medium">Click to view details</p>
+                      </div>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-3">{project.title}</h3>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
+                    {project.title}
+                  </h3>
                   <p className="text-muted-foreground mb-4 leading-relaxed">
                     {project.description}
                   </p>
@@ -135,6 +147,22 @@ const Projects = () => {
               </Card>
             ))}
           </div>
+
+          {/* No projects message */}
+          {filteredProjects.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                No projects found in this category.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => setFilter('all')}
+                className="mt-4"
+              >
+                View All Projects
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
