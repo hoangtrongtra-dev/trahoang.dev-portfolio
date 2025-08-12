@@ -1,34 +1,10 @@
 
-import { useState, useEffect } from 'react';
-import { Menu, X, Github, Linkedin, Mail, Sun, Moon } from 'lucide-react';
+import { useState } from 'react';
+import { Menu, X, Github, Linkedin, Mail } from 'lucide-react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    // Kiểm tra theme lưu trong localStorage hoặc hệ điều hành
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-      setIsDark(true);
-    } else {
-      document.documentElement.classList.remove('dark');
-      setIsDark(false);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
 
   const navigation = [
     { name: 'About', href: '#about' },
@@ -61,15 +37,9 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Social Links & Darkmode Toggle */}
+          {/* Social Links & Theme Toggle */}
           <div className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full border border-border hover:bg-muted transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            <ThemeToggle />
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
               <Github size={20} />
             </a>
@@ -105,13 +75,7 @@ const Header = () => {
                 </a>
               ))}
               <div className="flex items-center space-x-4 pt-4">
-                <button
-                  onClick={toggleTheme}
-                  className="p-2 rounded-full border border-border hover:bg-muted transition-colors"
-                  aria-label="Toggle dark mode"
-                >
-                  {isDark ? <Sun size={20} /> : <Moon size={20} />}
-                </button>
+                <ThemeToggle />
                 <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                   <Github size={20} />
                 </a>
